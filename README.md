@@ -1,36 +1,164 @@
 # JsonApiResponders
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/json_api_responders`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem gives a few convenient methods for working with JSONAPI. It is inspired by the [responders](https://github.com/plataformatec/responders) gem.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'json_api_responders'
+gem 'json_api_responders', 'https://github.com/ProctorU/json_api_responders.git', ref: 'master'
 ```
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Inside your base controller, include the module:
 
-    $ gem install json_api_responders
+```ruby
+module Api
+  module V1
+    class BaseController < ApplicationController
+      include JsonApiResponders
+    end
+  end
+end
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+This gem comes with the two following methods `respond_with` and `respond_with_error`.
 
-## Development
+#### `respond_with(resource, options = {}) `
+This method requires a resource as a parameter, and you can pass some options if you wish. Any options you do choose to pass into `respond_with` will be passed on to the `controller.render` method. In the [Configuration section](#configuration) you can learn how to set mandatory options. Bellow you will find a few examples on how to use this method:
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+    user = User.first
+    respond_with user
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+The above example will render the **User** object.
+
+    user = User.first
+    respond_with user, on_error: {
+    : :unauthorized, detail: 'Invalid user or password' }
+
+The above example will render an **Error** response if an error would occur.
+
+#### `respond_with_error(status, detail = nil)`
+This method requires HTTP status code and an optional parameter explaining the error. This method will render an error message as described in the JSON API specification. Below you can see an example of how it should be used:
+
+    respond_with_error(401, 'Bad credentials')
+    respond_with_error(404, 'Not found')
+    respond_with_error(400, 'Bad request')
+
+
+## Configuration
+Currently you can only configure which options are required to be passed through the `respond_with` method. These required options are categorized by the controller's actions. Bellow you can find an example:
+
+    JsonApiResponders.configure do |config|
+        config.required_options = {
+          index: [:each_serializer],
+          create: [:serializer]
+        }
+    end
+    ...
+    def create
+      user = User.create(...)
+      respond_with user, serializer: UserSerializer
+    end
+
+If `:serializer` was left out of the above `respond_with` method you would see the `JsonApiResponders::Errors::RequiredOptionMissingError` be raised.
+
+## Responses
+
+### index
+
+    render json: resource, status: 200
+
+### show
+
+    render json: resource, status: 200
+
+### create
+
+    if resource.valid?
+      render json: resource, status: 201
+    else
+      render error: errors, status: 409
+
+### update
+
+    if resource.valid?
+      render json: resource, status: 200
+    else
+      render error: errors, status: 409
+
+### destroy
+
+    head status: 204
+
+## Response examples
+
+**422 (unprocessable entity)**
+```json
+{
+  "status": 422,
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "resource": "User",
+      "field": "first_name",
+      "reason": "is blank",
+      "detail": "First name is blank."
+    },
+    {
+      "resource": "User",
+      "field": "last_name",
+      "reason": "is blank",
+      "detail": "Last name is blank."
+    }
+  ]
+}
+```
+
+**404** (resource not found)
+```json
+{
+  "status": 404,
+  "message": "Not found.",
+  "resource": "User"
+}
+```
+
+**401 (unauthorized)**
+```json
+{
+  "code": 401,
+  "message": "Bad credentials"
+}
+```
+
+## Error translations
+
+`json_api_responders` has translation support for error reason. These can be
+overwritten in rails-app `config/locales` folder:
+
+```yml
+en:
+  json_api:
+    errors:
+      not_found:
+        reason: Not found
+      forbidden:
+        reason: Unauthorized
+      unprocessable_entity:
+        reason: Unprocessable Entity
+      conflict:
+        reason: Invalid Attribute
+```
+
+It translates using the format `I18n.t("json_api.errors.#{human_readable_status_code}.reason")`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/json_api_responders.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/ProctorU/json_api_responders.
