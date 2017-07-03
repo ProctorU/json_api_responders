@@ -28,6 +28,14 @@ end
 
 ## Usage
 
+Configure with an initializer to pick the default responder_type `:jbuilder` or `:serializer`. `:jbuilder` is the default.
+
+```ruby
+JsonApiResponders.configuration do |config|
+  config.default_responder_type :jbuilder
+end
+```
+
 This gem comes with the two following methods `respond_with` and `respond_with_error`.
 
 #### `respond_with(resource, options = {}) `
