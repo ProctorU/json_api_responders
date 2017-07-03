@@ -43,14 +43,22 @@ module JsonApiResponders
       end
 
       def resource_render_options
+        return serializer_resource_render_options if
+          responder_type_eql?(:serializer)
+        jbuilder_resource_render_options
+      end
+
+      def jbuilder_resource_render_options
+        render_options
+      end
+
+      def serializer_resource_render_options
         serializer_key = relation? ? :each_serializer : :serializer
 
         render_options.merge(
-          json: resource
-        ).tap do |extra_options|
-          extra_options[serializer_key] = serializer_class if
-            responder_type_eql?(:serializer)
-        end
+          json: resource,
+          serializer_key => serializer_class
+        )
       end
 
       def serializer_class
