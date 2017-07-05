@@ -33,6 +33,14 @@ module JsonApiResponders
       render_error
     end
 
+    def parameter_missing
+      self.errors = {
+        reason: I18n.t('json_api.errors.parameter_missing.reason'),
+        detail: I18n.t('json_api.errors.parameter_missing.detail', parameter: resource.param)
+      }
+      render_error
+    end
+
     def unauthorized
       self.errors = {
         reason: I18n.t('json_api.errors.unauthorized.reason')
@@ -69,9 +77,9 @@ module JsonApiResponders
           status: status_code,
           message: general_error_message
         }.tap do |added_errors|
-          added_errors[:errors] = error_response unless errors
-          added_errors[:resource] = resource.model if errors
-          added_errors[:message] = errors[:reason] if errors
+          added_errors_obj(added_errors)
+          added_resource(added_errors)
+          added_message(added_errors)
         end
       )
     end
@@ -102,6 +110,21 @@ module JsonApiResponders
 
     def general_error_message
       I18n.t('json_api.errors.conflict.reason')
+    end
+
+    def added_errors_obj(error_obj)
+      error_obj[:errors] = error_response unless errors
+    end
+
+    def added_resource(error_obj)
+      return unless errors
+      return error_obj[:resource] = resource.model if resource.try(:model).present?
+      error_obj[:resource] = resource.param if resource.class.name.eql?('ActionController::ParameterMissing')
+      error_obj[:detail] = errors[:detail]
+    end
+
+    def added_message(error_obj)
+      error_obj[:message] = errors[:reason] if errors
     end
   end
 end

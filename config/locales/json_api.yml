@@ -9,3 +9,6 @@ en:
         reason: Unprocessable Entity
       conflict:
         reason: Invalid Attribute
+      parameter_missing:
+        reason: Missing Parameter
+        detail: Please supply the %{parameter} param
