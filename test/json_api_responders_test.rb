@@ -5,6 +5,10 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
     @params = { params: { format: :json } }
   end
 
+  test 'it has a gem version' do
+    assert_not_nil JsonApiResponders::VERSION
+  end
+
   test 'normal success response' do
     get posts_url, @params
     assert_response :success
