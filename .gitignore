@@ -8,3 +8,5 @@
 /spec/reports/
 /tmp/
 test/reports
+test/dummy/log
+test/dummy/tmp
