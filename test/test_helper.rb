@@ -5,6 +5,8 @@ require 'rails/test_help'
 require 'mocha/mini_test'
 require 'minitest/reporters'
 
+# include Warden::Test::Helpers
+
 # Filter out Minitest backtrace while allowing backtrace from other libraries
 # to be shown.
 Minitest.backtrace_filter = Minitest::BacktraceFilter.new

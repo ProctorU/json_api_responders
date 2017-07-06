@@ -2,6 +2,13 @@ require 'test_helper'
 
 class JsonApiRespondersTest < ActionDispatch::IntegrationTest
   setup do
+    # Need to set these up every time so that all the tests pass in whatever
+    # order they're called - authenticate_user_from_token! will be defined
+    # after the failed authentication test for a random set of other tests
+    #
+    # I think returns(true) is success (doesn't throw, anyway)
+    PostsController.any_instance.stubs(:authenticate_user_from_token!).returns(true)
+    PostsController.send :before_action,  :authenticate_user_from_token!
     @params = { params: { format: :json } }
   end
 
@@ -12,6 +19,27 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
   test 'normal success response' do
     get posts_url, @params
     assert_response :success
+  end
+
+  test 'failed authentication' do
+    PostsController.any_instance.unstub(:authenticate_user_from_token!)
+    PostsController.any_instance.stubs(:authenticate_user_from_token!).throws(:warden, :action => :unauthenticated)
+    #PostsController.any_instance.stubs(:instance_methods).stubs(:include?).with(:authenticate_user_from_token!).returns(true)
+    JsonApiResponders.redefine_authorization(PostsController)
+    PostsController.any_instance.unstub(:instance_methods)
+
+    @post = attributes_for(:post, title: nil)
+    assert_nothing_raised do
+      post posts_path, params: { post: @post, format: :json }
+    end
+    PostsController.any_instance.unstub(:authenticate_user_from_token!)
+
+    r = JSON.parse(response.body)
+
+    assert_response :forbidden
+    assert_equal 403, r['status']
+    assert_equal 'Not found', r['message']
+    assert_equal 'Post', r['resource']
   end
 
   test 'rescue RecordNotFound' do
