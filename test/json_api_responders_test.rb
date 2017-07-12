@@ -25,7 +25,7 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
   test 'failed authentication' do
     PostsController.any_instance.unstub(:authenticate_user_from_token!)
     PostsController.any_instance.stubs(:authenticate_user_from_token!).
-      throws(:warden, :action => :unauthenticated)
+      throws(:warden, action: :unauthenticated)
     JsonApiResponders.redefine_authorization(PostsController)
     PostsController.any_instance.unstub(:instance_methods)
 

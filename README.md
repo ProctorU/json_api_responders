@@ -48,7 +48,8 @@ The above example will render the **User** object.
 
     user = User.first
     respond_with user, on_error: {
-    : :unauthorized, detail: 'Invalid user or password' }
+      :unauthorized, detail: 'Invalid user or password' 
+    }
 
 The above example will render an **Error** response if an error would occur.
 

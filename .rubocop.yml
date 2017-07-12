@@ -24,6 +24,8 @@ AbcSize:
   Enabled: false
 Style/SpaceBeforeFirstArg:
   Enabled: false
+Style/DotPosition:
+  Enabled: false
 AmbiguousOperator:
   Enabled: false
 MultilineMethodCallIndentation:

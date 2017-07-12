@@ -5,8 +5,8 @@ require 'json_api_responders/version'
 Gem::Specification.new do |spec|
   spec.name = 'json_api_responders'
   spec.version = JsonApiResponders::VERSION
-  spec.authors = ['Kevin Brown']
-  spec.email = ['kdbrown@proctoru.com']
+  spec.authors = ['Stanko Krtalić Rusendić', 'Kevin Brown']
+  spec.email = ['stanko.krtalic@gmail.com', 'kdbrown@proctoru.com']
 
   spec.summary = 'Automatically respond to JSON::API requests'
   spec.description = 'Automatically respond to JSON::API requests'

@@ -36,7 +36,10 @@ module JsonApiResponders
     def parameter_missing
       self.errors = {
         reason: I18n.t('json_api.errors.parameter_missing.reason'),
-        detail: I18n.t('json_api.errors.parameter_missing.detail', parameter: resource.param)
+        detail: I18n.t(
+          'json_api.errors.parameter_missing.detail',
+          parameter: resource.param
+        )
       }
       render_error
     end
@@ -118,9 +121,18 @@ module JsonApiResponders
 
     def added_resource(error_obj)
       return unless errors
-      return error_obj[:resource] = resource.model if resource.try(:model).present?
-      error_obj[:resource] = resource.param if resource.class.name.eql?('ActionController::ParameterMissing')
+      error_obj[:resource] = resource_model_or_param
       error_obj[:detail] = errors[:detail]
+    end
+
+    def resource_model_or_param
+      return resource.model if resource.try(:model).present?
+      resource_param
+    end
+
+    def resource_param
+      resource.param if
+        resource.class.name.eql?('ActionController::ParameterMissing')
     end
 
     def added_message(error_obj)
