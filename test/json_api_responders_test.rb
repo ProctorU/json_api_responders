@@ -7,7 +7,8 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
     # after the failed authentication test for a random set of other tests
     #
     # I think returns(true) is success (doesn't throw, anyway)
-    PostsController.any_instance.stubs(:authenticate_user_from_token!).returns(true)
+    PostsController.any_instance.stubs(:authenticate_user_from_token!).
+      returns(true)
     PostsController.send :before_action,  :authenticate_user_from_token!
     @params = { params: { format: :json } }
   end
@@ -23,8 +24,8 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
 
   test 'failed authentication' do
     PostsController.any_instance.unstub(:authenticate_user_from_token!)
-    PostsController.any_instance.stubs(:authenticate_user_from_token!).throws(:warden, :action => :unauthenticated)
-    #PostsController.any_instance.stubs(:instance_methods).stubs(:include?).with(:authenticate_user_from_token!).returns(true)
+    PostsController.any_instance.stubs(:authenticate_user_from_token!).
+      throws(:warden, :action => :unauthenticated)
     JsonApiResponders.redefine_authorization(PostsController)
     PostsController.any_instance.unstub(:instance_methods)
 
