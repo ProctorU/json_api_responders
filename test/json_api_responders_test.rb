@@ -66,10 +66,6 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
     assert_equal 'Please supply the post param', r['detail']
   end
 
-  # test 'rescue Unauthorized' do
-  #   # TODO: Complete this with stubs or dummy app?
-  # end
-  #
   test 'post create with blank attribute' do
     @post = attributes_for(:post, title: nil)
     post posts_path, params: { post: @post, format: :json }
