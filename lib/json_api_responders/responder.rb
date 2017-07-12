@@ -43,7 +43,7 @@ module JsonApiResponders
 
     def unauthorized
       self.errors = {
-        reason: I18n.t('json_api.errors.unauthorized.reason')
+        reason: I18n.t('json_api.errors.forbidden.reason')
       }
       render_error
     end

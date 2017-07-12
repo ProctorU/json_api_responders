@@ -38,8 +38,7 @@ class JsonApiRespondersTest < ActionDispatch::IntegrationTest
 
     assert_response :forbidden
     assert_equal 403, r['status']
-    assert_equal 'Not found', r['message']
-    assert_equal 'Post', r['resource']
+    assert_equal 'Unauthorized', r['message']
   end
 
   test 'rescue RecordNotFound' do
