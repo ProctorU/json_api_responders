@@ -28,6 +28,8 @@ AmbiguousOperator:
   Enabled: false
 MultilineMethodCallIndentation:
   Enabled: false
+Style/EmptyMethod:
+  Enabled: false
 Style/FrozenStringLiteralComment:
   Enabled: false
 Style/ParenthesesAroundCondition:
